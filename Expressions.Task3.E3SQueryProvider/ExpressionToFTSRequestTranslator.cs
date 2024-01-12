@@ -1,4 +1,9 @@
-﻿namespace Expressions.Task3.E3SQueryProvider
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+
+namespace Expressions.Task3.E3SQueryProvider
 {
     public class ExpressionToFtsRequestTranslator : ExpressionVisitor
     {

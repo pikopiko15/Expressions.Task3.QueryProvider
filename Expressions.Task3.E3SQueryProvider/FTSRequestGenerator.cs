@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Expressions.Task3.E3SQueryProvider
 {
@@ -13,7 +14,7 @@ namespace Expressions.Task3.E3SQueryProvider
         private readonly string _baseAddress;
 
         #region Constructors
-        
+
         public FtsRequestGenerator(string baseAddress)
         {
             _baseAddress = baseAddress;
@@ -34,12 +35,7 @@ namespace Expressions.Task3.E3SQueryProvider
 
             var ftsQueryRequest = new FtsQueryRequest
             {
-                Statements = new List<Statement>
-                {
-                    new Statement {
-                        Query = query
-                    }
-                },
+                Statements = query.Split(';').Select(x => new Statement { Query = x }).ToList(),
                 Start = start,
                 Limit = limit
             };

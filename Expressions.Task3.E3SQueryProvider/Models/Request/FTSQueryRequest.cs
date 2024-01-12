@@ -1,4 +1,7 @@
-﻿namespace Expressions.Task3.E3SQueryProvider.Models.Request
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+
+namespace Expressions.Task3.E3SQueryProvider.Models.Request
 {
     [JsonObject]
     public class FtsQueryRequest
