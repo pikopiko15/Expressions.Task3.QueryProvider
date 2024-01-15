@@ -34,30 +34,45 @@ namespace Expressions.Task3.E3SQueryProvider
                 return node;
             }
 
-            if (node.Method.DeclaringType == typeof(string)
-                && (node.Method.Name == "Equals"
-                || node.Method.Name == "Contains"
-                || node.Method.Name == "StartsWith"
-                || node.Method.Name == "EndsWith"))
+            if (node.Method.Name == "Equals")
             {
                 Visit(node.Object);
-
                 _resultStringBuilder.Append("(");
+                Visit(node.Arguments[0]);
+                _resultStringBuilder.Append(")");
 
-                if (node.Method.Name == "Contains" || node.Method.Name == "EndsWith")
-                {
-                    _resultStringBuilder.Append("*");
-                }
+                return node;
+            }
 
-                var predicate = node.Arguments[0];
+            if (node.Method.Name == "StartsWith")
+            {
+                Visit(node.Object);
+                _resultStringBuilder.Append("(");
+                Visit(node.Arguments[0]);
+                _resultStringBuilder.Append("*");
+                _resultStringBuilder.Append(")");
 
-                Visit(predicate);
+                return node;
+            }
 
-                if (node.Method.Name == "Contains" || node.Method.Name == "StartsWith")
-                {
-                    _resultStringBuilder.Append("*");
-                }
+            if (node.Method.Name == "EndsWith")
+            {
+                Visit(node.Object);
+                _resultStringBuilder.Append("(");
+                _resultStringBuilder.Append("*");
+                Visit(node.Arguments[0]);
+                _resultStringBuilder.Append(")");
 
+                return node;
+            }
+
+            if (node.Method.Name == "Contains")
+            {
+                Visit(node.Object);
+                _resultStringBuilder.Append("(");
+                _resultStringBuilder.Append("*");
+                Visit(node.Arguments[0]);
+                _resultStringBuilder.Append("*");
                 _resultStringBuilder.Append(")");
 
                 return node;
@@ -71,28 +86,22 @@ namespace Expressions.Task3.E3SQueryProvider
             switch (node.NodeType)
             {
                 case ExpressionType.Equal:
-                    var (left, right) = node.Right.NodeType == ExpressionType.Constant
-                        ? (node.Left, node.Right)
-                        : (node.Right, node.Left);
+                    var nodeMember = node.Left.NodeType == ExpressionType.MemberAccess
+                                   ? node.Left
+                                   : node.Right;
 
-                    Visit(left);
+                    var nodeConstant = node.Right.NodeType == ExpressionType.Constant
+                                   ? node.Right
+                                   : node.Left;
+
+                    Visit(nodeMember);
                     _resultStringBuilder.Append("(");
-                    Visit(right);
+                    Visit(nodeConstant);
                     _resultStringBuilder.Append(")");
                     break;
-
                 case ExpressionType.AndAlso:
-                case ExpressionType.And:
                     Visit(node.Left);
-                    _resultStringBuilder.Append(" AND ");
-                    Visit(node.Right);
-                    break;
-
-                case ExpressionType.OrElse:
-                case ExpressionType.Or:
-                    Visit(node.Left);
-
-                    _resultStringBuilder.Append(" OR ");
+                    _resultStringBuilder.Append(";");
                     Visit(node.Right);
                     break;
 

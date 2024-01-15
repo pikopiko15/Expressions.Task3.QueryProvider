@@ -33,9 +33,12 @@ namespace Expressions.Task3.E3SQueryProvider
         {
             string metaTypeName = GetMetaTypeName(type);
 
+            var queries = query.Split(';');
+            var statements = queries.Select(q => new Statement { Query = q }).ToList();
+
             var ftsQueryRequest = new FtsQueryRequest
             {
-                Statements = query.Split(';').Select(x => new Statement { Query = x }).ToList(),
+                Statements = statements,
                 Start = start,
                 Limit = limit
             };
